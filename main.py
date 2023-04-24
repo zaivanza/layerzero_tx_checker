@@ -27,10 +27,12 @@ async def get_get(session, wallet, chain, token):
             resp_json = await resp.json(content_type=None)
             datas[wallet][type_][chain][token].update(resp_json)
 
-        if datas[wallet][type_][chain][token]['message'] == "NOTOK":
-
+        if datas[wallet][type_][chain][token]['result'] == "Max rate limit reached":
             await asyncio.sleep(1)
             return await get_get(session, wallet, chain, token)
+        
+        elif datas[wallet][type_][chain][token]['result'] == "Invalid API Key":
+            logger.error(f'{wallet} : {chain} : Invalid API Key')
 
         else:
             logger.success(f'{wallet} : {chain}')
@@ -38,6 +40,7 @@ async def get_get(session, wallet, chain, token):
 
     except Exception as error:
 
+        # logger.error(f'{wallet} | error : {error}')
         time_sleep = 3
         await asyncio.sleep(time_sleep)
         return await get_get(session, wallet, chain, token)
@@ -78,13 +81,13 @@ def get_data_new():
 
         for items_2 in items_1[1].items():
             type_ = items_2[0]
+            
 
             massive[wallet].update({type_ : {}})
         
             for items_3 in items_2[1].items():
 
                 times = []
-                
                 chain = items_3[0]
 
                 massive[wallet][type_].update(
@@ -115,9 +118,9 @@ def get_data_new():
                 )
 
                 for items_4 in items_3[1].items():
-
-                    address_token = items_4[0].upper()
-                    result_ = items_4[1]['result']
+                    
+                    address_token   = items_4[0].upper()
+                    result_         = items_4[1]['result']
 
                     for data in result_:
 
@@ -135,14 +138,16 @@ def get_data_new():
                                 contracts = contracts_erc20
 
                             human_value = round_to(decimalToInt(value, decimals))
-                            # date_time = datetime.fromtimestamp(timestamp).strftime('%d-%m-%y')
-                            date_time = timestamp
 
                             if type_ == 'eth':
                                 for items in contracts[chain].items():
                                     name    = items[0]
                                     address = items[1].upper()
+
                                     if contract == address:
+
+                                        if chain in ['polygon', 'fantom', 'bsc']:
+                                            human_value = 0
 
                                         massive[wallet][type_][chain]['values'][name]  += human_value
                                         massive[wallet][type_][chain]['total_value']   += human_value
@@ -150,7 +155,7 @@ def get_data_new():
                                         massive[wallet][type_][chain]['nonces'][name]  += 1
                                         massive[wallet][type_][chain]['total_nonce']   += 1
 
-                                        times.append(date_time)
+                                        times.append(timestamp)
 
                             elif type_ == 'erc20':
                                 for items in contracts[chain].items():
@@ -164,6 +169,8 @@ def get_data_new():
                                             name    = _[0]
                                             address = _[1].upper()
 
+                                            # cprint(f'{name} : {contract} : {address}', 'blue')
+
                                             if contract == address:
 
                                                 massive[wallet][type_][chain]['values'][name]  += human_value
@@ -172,10 +179,11 @@ def get_data_new():
                                                 massive[wallet][type_][chain]['nonces'][name]  += 1
                                                 massive[wallet][type_][chain]['total_nonce']   += 1
 
-                                                times.append(date_time)
+                                                times.append(timestamp)
 
                         except Exception as error: 
-                            logger.error(error)
+                            # logger.error(error)
+                            None
 
                     try:
                         massive[wallet][type_][chain]['first_tx']   = times[0]
@@ -353,16 +361,21 @@ async def run():
     await asyncio.gather(*tasks)
     
 
-start = time.perf_counter()
+if __name__ == "__main__":
 
-asyncio.run(run())
-TOTAL = get_data_new()
-results = get_results(TOTAL)
+    cprint(RUN_TEXT, RUN_COLOR)
+    cprint(f'\nsubscribe to us : https://t.me/hodlmodeth\n', RUN_COLOR)
 
-send_result(results)
 
-fin = round((time.perf_counter() - start), 1)
-cprint(f'finish : {fin}', 'blue')
+    start = time.perf_counter()
 
+    asyncio.run(run())
+    TOTAL = get_data_new()
+    results = get_results(TOTAL)
+
+    send_result(results)
+
+    fin = round((time.perf_counter() - start), 1)
+    cprint(f'finish : {fin}', 'blue')
 
 
