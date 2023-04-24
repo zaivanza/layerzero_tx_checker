@@ -23,6 +23,7 @@
 - optimism => chain (btcb)
 6. holograph :
 - avaxc => chain (nft)
+- polygon => chain (nft)
 
 
 # Настройка :
