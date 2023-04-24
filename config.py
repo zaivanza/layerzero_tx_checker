@@ -1,6 +1,7 @@
 import json, requests, time
 from termcolor import cprint
 from datetime import date, datetime
+import datetime as date_timestamp
 import math
 import random
 import asyncio, aiohttp
@@ -253,7 +254,9 @@ text2 = '''
 '''
 
 texts = [text1, text2]
-colors = ['red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'light_grey',  'light_red', 'light_green', 'light_yellow', 'light_blue', 'light_magenta', 'light_cyan', 'white']
+colors = ['green', 'yellow', 'blue', 'magenta', 'cyan']
 
 RUN_TEXT = random.choice(texts)
 RUN_COLOR = random.choice(colors)
+
+
