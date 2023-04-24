@@ -261,7 +261,7 @@ def get_results(TOTAL):
 
 def send_result(results):
 
-    time_stamp = int(datetime.strptime(LAST_DATE_TX, '%d/%m/%Y').strftime("%s"))
+    time_stamp = time.mktime(date_timestamp.datetime.strptime(LAST_DATE_TX, "%d/%m/%Y").timetuple())
 
     w_ = {
         'date': [],
@@ -306,7 +306,7 @@ def send_result(results):
 
                 spamwriter.writerow([zero, address, tx_amount, value_erc20, value_eth, first_tx_date, last_tx_date])
 
-        color = 'light_magenta'
+        color = 'magenta'
         if len(w_['value_erc20']) > 0:
             spamwriter.writerow([])
             spamwriter.writerow(['№', f'value_erc20 < {MIN_VALUE_ERC20}'])
@@ -369,7 +369,10 @@ if __name__ == "__main__":
 
     start = time.perf_counter()
 
-    asyncio.run(run())
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(run())
+    loop.close()
+
     TOTAL = get_data_new()
     results = get_results(TOTAL)
 
