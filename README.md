@@ -1,6 +1,6 @@
 [![Typing SVG](https://readme-typing-svg.herokuapp.com?color=%2336BCF7&lines=LayerZero+:+tx_checker)](https://git.io/typing-svg)
 
-Скрипт парсит все транзакции в 4 сетях (arbitrum, optimism, bsc, avalanche (avaxc)) и ищет совпадения по контракту из этих модулей :
+Скрипт парсит все транзакции в 7 чейнах, ищет совпадения по контракту из модулей (ниже) и выписывает в csv файл результат : кол-во транзакций: дата первой и последней транзакции, объем в eth и объем в erc20 (стейблы).
 
 1. testnet bridge : 
 - arbitrum => goerli (eth) 
@@ -23,6 +23,7 @@
 - optimism => chain (btcb)
 6. holograph :
 - avaxc => chain (nft)
+
 
 # Настройка :
 
