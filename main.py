@@ -273,7 +273,7 @@ def send_result(results):
     with open(f'{outfile}{FILE_NAME}.csv', 'w', newline='') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
         
-        spamwriter.writerow(['№', 'wallet', 'tx_amount', 'value_erc20', 'value_eth', 'first_tx', 'last_tx'])
+        spamwriter.writerow(['number', 'wallet', 'tx_amount', 'value_erc20', 'value_eth', 'first_tx', 'last_tx'])
 
         # просто выписываем все результаты
         zero = 0
@@ -309,7 +309,7 @@ def send_result(results):
         color = 'magenta'
         if len(w_['value_erc20']) > 0:
             spamwriter.writerow([])
-            spamwriter.writerow(['№', f'value_erc20 < {MIN_VALUE_ERC20}'])
+            spamwriter.writerow(['number', f'value_erc20 < {MIN_VALUE_ERC20}'])
             cprint(f'\nНа этих кошельках value_erc20 < {MIN_VALUE_ERC20} :', color)
 
             zero = 0
@@ -320,7 +320,7 @@ def send_result(results):
 
         if len(w_['value_eth']) > 0:
             spamwriter.writerow([])
-            spamwriter.writerow(['№', f'value_eth < {MIN_VALUE_ETH}'])
+            spamwriter.writerow(['number', f'value_eth < {MIN_VALUE_ETH}'])
             cprint(f'\nНа этих кошельках value_eth < {MIN_VALUE_ETH} :', color)
 
             zero = 0
@@ -331,7 +331,7 @@ def send_result(results):
 
         if len(w_['date']) > 0:
             spamwriter.writerow([])
-            spamwriter.writerow(['№', f'last_tx_date < {LAST_DATE_TX}'])
+            spamwriter.writerow(['number', f'last_tx_date < {LAST_DATE_TX}'])
             cprint(f'\nНа этих кошельках не было транзакций после {LAST_DATE_TX} :', color)
 
             zero = 0
@@ -342,7 +342,7 @@ def send_result(results):
 
         if len(w_['tx_amount']) > 0:
             spamwriter.writerow([])
-            spamwriter.writerow(['№', f'tx_amount < {MIN_TX_AMOUNT}'])
+            spamwriter.writerow(['number', f'tx_amount < {MIN_TX_AMOUNT}'])
             cprint(f'\nНа этих кошельках кол-во транзакций < {MIN_TX_AMOUNT} :', color)
 
             zero = 0
