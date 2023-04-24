@@ -4,9 +4,13 @@
 
 1. testnet bridge : 
 - arbitrum => goerli (eth) 
+- optimism => goerli (eth) 
 2. stargate : 
 - arbitrum => chain (eth / usdc / usdt)
 - optimism => chain (eth / usdc)
+- polygon => chain (usdc / usdt)
+- fantom => chain (usdc)
+- ethereum => chain (eth / usdc / usdt)
 3. woofi :
 - arbitrum => chain (eth)
 - optimism => chain (eth)
@@ -15,6 +19,8 @@
 - bsc => aptos (usdt / usdc)
 5. bitcoin bridge :
 - avaxc => chain (btcb)
+- arbitrum => chain (btcb)
+- optimism => chain (btcb)
 6. holograph :
 - avaxc => chain (nft)
 
