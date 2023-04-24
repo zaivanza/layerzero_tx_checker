@@ -44,6 +44,9 @@
 - `avax_api.txt` : https://snowtrace.io/myapikey
 - `bsc_api.txt` : https://bscscan.com/myapikey
 - `opt_api.txt` : https://optimistic.etherscan.io/myapikey
+- `eth_api.txt` : https://etherscan.io/myapikey
+- `polygon_api.txt` : https://polygonscan.com/myapikey
+- `ftm_api.txt` : https://ftmscan.com/myapikey
 3. В файле `config.py` меняем значения переменных под себя :
 - `MIN_VALUE_ERC20` - если объем в erc20 токенах будет меньше этого числа, кошелек выделяется.
 - `MIN_VALUE_ETH` - если объем в нативных (eth) токенах будет меньше этого числа, кошелек выделяется.
