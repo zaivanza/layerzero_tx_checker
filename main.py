@@ -259,21 +259,33 @@ def get_results(TOTAL):
 
     return results
 
+def compare_date(date_1, date_2):
+
+  a = date_1.split('-')
+  b = date_2.split('-')
+
+  aa = datetime(day=int(a[0]),month=int(a[1]),year=int(a[2]))
+  bb = datetime(day=int(b[0]),month=int(b[1]),year=int(b[2]))
+  days_amount = int(str(bb-aa).split()[0]) 
+
+  return days_amount
+
 def send_result(results):
 
-    time_stamp = time.mktime(date_timestamp.datetime.strptime(LAST_DATE_TX, "%d/%m/%Y").timetuple())
+    time_stamp = time.mktime(date_timestamp.datetime.strptime(LAST_DATE_TX, "%d-%m-%Y").timetuple())
 
     w_ = {
         'date': [],
         'value_erc20': [],
         'value_eth': [],
         'tx_amount': [],
+        'days_amount': [],
     }
 
     with open(f'{outfile}{FILE_NAME}.csv', 'w', newline='') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
         
-        spamwriter.writerow(['number', 'wallet', 'tx_amount', 'value_erc20', 'value_eth', 'first_tx', 'last_tx'])
+        spamwriter.writerow(['number', 'wallet', 'tx_amount', 'value_erc20', 'value_eth', 'first_tx', 'last_tx', 'number_of_days_between_first_and_last_tx'])
 
         # просто выписываем все результаты
         zero = 0
@@ -292,6 +304,13 @@ def send_result(results):
                 value_eth       = wallet[1]['value_eth']
                 value_eth       = round_to(value_eth)
 
+                first_tx_date   = datetime.fromtimestamp(first_tx).strftime('%d-%m-%y')
+                last_tx_date    = datetime.fromtimestamp(last_tx).strftime('%d-%m-%y')
+
+                days_amount = compare_date(first_tx_date, last_tx_date)
+
+                spamwriter.writerow([zero, address, tx_amount, value_erc20, value_eth, first_tx_date, last_tx_date, days_amount])
+
                 if value_erc20 < MIN_VALUE_ERC20:
                     w_['value_erc20'].append(address)
                 if value_eth < MIN_VALUE_ETH:
@@ -300,11 +319,8 @@ def send_result(results):
                     w_['date'].append(address)
                 if tx_amount < MIN_TX_AMOUNT:
                     w_['tx_amount'].append(address)
-
-                first_tx_date   = datetime.fromtimestamp(first_tx).strftime('%d-%m-%y')
-                last_tx_date    = datetime.fromtimestamp(last_tx).strftime('%d-%m-%y')
-
-                spamwriter.writerow([zero, address, tx_amount, value_erc20, value_eth, first_tx_date, last_tx_date])
+                if days_amount < DAYS_AMOUNT:
+                    w_['days_amount'].append(address)
 
         color = 'magenta'
         if len(w_['value_erc20']) > 0:
@@ -347,6 +363,17 @@ def send_result(results):
 
             zero = 0
             for wallet in w_['tx_amount']:
+                zero += 1
+                cprint(wallet, 'white')
+                spamwriter.writerow([zero, wallet])
+
+        if len(w_['days_amount']) > 0:
+            spamwriter.writerow([])
+            spamwriter.writerow(['number', f'days_amount < {DAYS_AMOUNT}'])
+            cprint(f'\nНа этих кошельках кол-во дней между первой и последней транзакцией < {DAYS_AMOUNT} :', color)
+
+            zero = 0
+            for wallet in w_['days_amount']:
                 zero += 1
                 cprint(wallet, 'white')
                 spamwriter.writerow([zero, wallet])
