@@ -43,7 +43,7 @@ from loguru import logger
 MIN_VALUE_ERC20 = 0 # $
 MIN_VALUE_ETH   = 0.5 # eth
 MIN_TX_AMOUNT   = 10 
-LAST_DATE_TX    = '12/04/2023' # d/m/y
+LAST_DATE_TX    = '12-04-2023' # d/m/y
 
 # если кол-во дней между первой и последней транзакцией меньше этого числа, кошелек выделяется
 DAYS_AMOUNT     = 30
