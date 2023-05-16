@@ -285,7 +285,7 @@ def compare_date(date_1, date_2):
         logger.error(error)
         days_amount = 0
 
-        return days_amount
+    return days_amount
 
 def send_result(results):
 
@@ -423,8 +423,5 @@ if __name__ == "__main__":
 
     fin = round((time.perf_counter() - start), 1)
     cprint(f'finish : {fin}', 'blue')
-
-
-
 
 
