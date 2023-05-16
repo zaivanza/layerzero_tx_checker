@@ -25,6 +25,7 @@ async def get_get(session, wallet, chain, token):
 
         async with session.get(url, ssl=False, timeout=20) as resp:
             resp_json = await resp.json(content_type=None)
+            # print(resp_json)
             datas[wallet][type_][chain][token].update(resp_json)
 
         if datas[wallet][type_][chain][token]['result'] == "Max rate limit reached":
@@ -34,7 +35,11 @@ async def get_get(session, wallet, chain, token):
         elif datas[wallet][type_][chain][token]['result'] == "Invalid API Key":
             logger.error(f'{wallet} : {chain} : Invalid API Key')
 
-        else:
+        elif datas[wallet][type_][chain][token]['result'] == "Max rate limit reached, please use API Key for higher rate limit":
+            await asyncio.sleep(1)
+            return await get_get(session, wallet, chain, token)
+
+        else: 
             logger.success(f'{wallet} : {chain}')
 
 
@@ -267,14 +272,20 @@ def get_results(TOTAL):
 
 def compare_date(date_1, date_2):
 
-  a = date_1.split('-')
-  b = date_2.split('-')
+    try:
 
-  aa = datetime(day=int(a[0]),month=int(a[1]),year=int(a[2]))
-  bb = datetime(day=int(b[0]),month=int(b[1]),year=int(b[2]))
-  days_amount = int(str(bb-aa).split()[0]) 
+        a = date_1.split('-')
+        b = date_2.split('-')
 
-  return days_amount
+        aa = datetime(day=int(a[0]),month=int(a[1]),year=int(a[2]))
+        bb = datetime(day=int(b[0]),month=int(b[1]),year=int(b[2]))
+        days_amount = int(str(bb-aa).split()[0]) 
+
+    except Exception as error:
+        logger.error(error)
+        days_amount = 0
+
+        return days_amount
 
 def send_result(results):
 
@@ -412,6 +423,7 @@ if __name__ == "__main__":
 
     fin = round((time.perf_counter() - start), 1)
     cprint(f'finish : {fin}', 'blue')
+
 
 
 
