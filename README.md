@@ -18,12 +18,14 @@
 - arbitrum => aptos (eth)
 - bsc => aptos (usdt / usdc)
 5. bitcoin bridge :
-- avaxc => chain (btcb)
-- arbitrum => chain (btcb)
-- optimism => chain (btcb)
+- avalanche, arbitrum, optimism, bsc, polygon
 6. holograph :
-- avaxc => chain (nft)
+- avalanche => chain (nft)
 - polygon => chain (nft)
+7. harmony :
+- bsc => harmony (bnb)
+8. core :
+- bsc => core (usdt / usdc)
 
 
 # Настройка :
@@ -32,7 +34,7 @@
 `python3 -m venv .venv`
 
 Активируем :
-`.venv\Scripts\activate.bat` - для Windows.
+`.venv\Scripts\activate.bat` or `.venv\Scripts\activate.ps1` - для Windows.
 `source .venv/bin/activate` - для Linux и MacOS.
 
 Устанавливаем библиотеки :
@@ -50,7 +52,7 @@
 - `eth_api.txt` : https://etherscan.io/myapikey
 - `polygon_api.txt` : https://polygonscan.com/myapikey
 - `ftm_api.txt` : https://ftmscan.com/myapikey
-3. В файле `config.py` меняем значения переменных под себя :
+3. В файле `setting.py` меняем значения переменных под себя :
 - `MIN_VALUE_ERC20` - если объем в erc20 токенах будет меньше этого числа, кошелек выделяется.
 - `MIN_VALUE_ETH` - если объем в нативных (eth) токенах будет меньше этого числа, кошелек выделяется.
 - `MIN_TX_AMOUNT` - если кол-во транзакций в layerzero меньше этого числа, кошелек выделяется.
