@@ -103,7 +103,9 @@ def get_data_new():
                                 "testnetbridge": 0,
                                 "woofi": 0,
                                 "holograph": 0,
-                                "bitcoinbridge": 0
+                                "bitcoinbridge": 0,
+                                "harmony": 0,
+                                "core": 0,
                             },
                             "nonces": {
                                 "aptosbridge": 0,
@@ -111,7 +113,9 @@ def get_data_new():
                                 "testnetbridge": 0,
                                 "woofi": 0,
                                 "holograph": 0,
-                                "bitcoinbridge": 0
+                                "bitcoinbridge": 0,
+                                "harmony": 0,
+                                "core": 0,
                             }
                         }
                     }
@@ -139,6 +143,7 @@ def get_data_new():
 
                             human_value = round_to(decimalToInt(value, decimals))
 
+
                             if type_ == 'eth':
                                 for items in contracts[chain].items():
                                     name    = items[0]
@@ -158,6 +163,7 @@ def get_data_new():
                                         times.append(timestamp)
 
                             elif type_ == 'erc20':
+
                                 for items in contracts[chain].items():
 
                                     address_ = items[0].upper()
@@ -406,5 +412,7 @@ if __name__ == "__main__":
 
     fin = round((time.perf_counter() - start), 1)
     cprint(f'finish : {fin}', 'blue')
+
+
 
 
