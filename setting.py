@@ -1,12 +1,18 @@
+
+# ================================ setting ================================
+
+CSV_WRITE_CHAINS    = True # True если нужно записывать в csv информацию о кол-ве транзакций в каждой сети.         False если не нужно
+CSV_WRITE_PROTOCOLS = True # True если нужно записывать в csv информацию о кол-ве транзакций в каждом протоколе.    False если не нужно
+
 MIN_VALUE_ERC20 = 0 # $
-MIN_VALUE_ETH   = 0 # eth
-MIN_TX_AMOUNT   = 5
-LAST_DATE_TX    = '20-04-2023' # d-m-y
+MIN_VALUE_ETH   = 0.1 # eth
+MIN_TX_AMOUNT   = 20
+LAST_DATE_TX    = '15-05-2023' # d-m-y
 
 # если кол-во дней между первой и последней транзакцией меньше этого числа, кошелек выделяется
 DAYS_AMOUNT     = 30
 
-# чтобы отключить сеть, закомментируй ее
+# какие сети парсим. чтобы отключить сеть, закомментируй ее
 chains = [
     'arbitrum',
     'optimism',
@@ -14,10 +20,36 @@ chains = [
     'bsc',
     'polygon',
     'fantom',
-    # 'ethereum',
+    'ethereum',
 ]
 
+# если кол-во транзакций в сети будет меньше назначенного числа, кошелек выделяется
+MIN_TX_AMOUNT_CHAINS = {
+    "arbitrum"  : 0,
+    "optimism"  : 0,
+    "avalanche" : 0,
+    "bsc"       : 10,
+    "polygon"   : 0,
+    "fantom"    : 0,
+    "ethereum"  : 0
+}
+
+# если кол-во транзакций в протоколе (смотрит во всех сетях) будет меньше назначенного числа, кошелек выделяется
+MIN_TX_AMOUNT_PROTOCOLS = {
+    "aptosbridge"   : 0,
+    "stargate"      : 0,
+    "testnetbridge" : 0,
+    "woofi"         : 0,
+    "holograph"     : 1,
+    "bitcoinbridge" : 0,
+    "harmony"       : 0,
+    "core"          : 0
+}
+
 FILE_NAME = 'layerzero' # имя файла csv, который скрипт создаст сам
+
+# =========================================================================
+
 
 '''
 
@@ -34,6 +66,8 @@ FILE_NAME = 'layerzero' # имя файла csv, который скрипт с�
 - polygon => chain (usdc / usdt)
 - fantom => chain (usdc)
 - ethereum => chain (eth / usdc / usdt)
+- avalanche  => chain (usdc / usdt)
+- bsc  => chain (usdt)
 3. woofi :
 - arbitrum => chain (eth)
 - optimism => chain (eth)
@@ -84,6 +118,8 @@ token_contracts = {
     },
     'avalanche': {
         'BTCB': '0x152b9d0FdC40C096757F570A51E494bd4b943E50',
+        'USDC': '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
+        'USDT': '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7',
     },
 }
 
@@ -118,6 +154,7 @@ contracts_erc20 = {
             {
                 'aptosbridge': '0x2762409Baa1804D94D8c0bCFF8400B78Bf915D5B',
                 'core': '0x52e75d318cfb31f9a2edfa2dfee26b161255b233',
+                'stargate': '0x68c6c27fb0e02285829e69240be16f32c5f8befe',
             },
             
         token_contracts['bsc']['USDC'] : 
@@ -166,6 +203,14 @@ contracts_erc20 = {
             {
                 'bitcoinbridge': '0x2297aEbD383787A160DD0d9F71508148769342E3',
             },
+        token_contracts['avalanche']['USDT'] : 
+            {
+                'stargate': '0x29e38769f23701a2e4a8ef0492e19da4604be62c',
+            },
+        token_contracts['avalanche']['USDC'] : 
+            {
+                'stargate': '0x1205f31718499dbf1fca446663b532ef87481fe1',
+            },
     },
 }
 
@@ -196,3 +241,4 @@ contracts_eth = {
         'harmony': '0x128AEdC7f41ffb82131215e1722D8366faaD0CD4',
     },
 }
+
