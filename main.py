@@ -29,14 +29,14 @@ async def get_get(session, wallet, chain, token):
             datas[wallet][type_][chain][token].update(resp_json)
 
         if datas[wallet][type_][chain][token]['result'] == "Max rate limit reached":
-            await asyncio.sleep(1)
+            await asyncio.sleep(10)
             return await get_get(session, wallet, chain, token)
         
         elif datas[wallet][type_][chain][token]['result'] == "Invalid API Key":
             logger.error(f'{wallet} : {chain} : Invalid API Key')
 
         elif datas[wallet][type_][chain][token]['result'] == "Max rate limit reached, please use API Key for higher rate limit":
-            await asyncio.sleep(1)
+            await asyncio.sleep(10)
             return await get_get(session, wallet, chain, token)
 
         else: 
@@ -196,10 +196,12 @@ def get_data_new():
                             # logger.error(error)
                             None
 
-                    try:
-                        massive[wallet][type_][chain]['first_tx']   = times[0]
-                        massive[wallet][type_][chain]['last_tx']    = times[-1]
-                    except: None
+                times.sort()
+
+                try:
+                    massive[wallet][type_][chain]['first_tx']   = times[0]
+                    massive[wallet][type_][chain]['last_tx']    = times[-1]
+                except: None
 
         TOTAL.append(massive)
 
@@ -231,6 +233,25 @@ def get_results(TOTAL):
                         'nonce': 0,
                         'value_erc20': 0,
                         'value_eth': 0,
+                        'nonce_chain': {
+                            "arbitrum": 0,
+                            "optimism": 0,
+                            "avalanche": 0,
+                            "bsc": 0,
+                            "polygon": 0,
+                            "fantom": 0,
+                            "ethereum": 0
+                        },
+                        'nonce_protocols': {
+                            "aptosbridge": 0,
+                            "stargate": 0,
+                            "testnetbridge": 0,
+                            "woofi": 0,
+                            "holograph": 0,
+                            "bitcoinbridge": 0,
+                            "harmony": 0,
+                            "core": 0,
+                        }
                     }
                 }
                 for items in items[1].items():
@@ -241,13 +262,18 @@ def get_results(TOTAL):
                         first_tx    = items[1]['first_tx']
                         last_tx     = items[1]['last_tx']
                         total_value = items[1]['total_value']
-      
-                        
-
                         total_nonce = items[1]['total_nonce']
+                        nonces      = items[1]['nonces']
 
-                        if first_tx != 0: d_['txs'].append(first_tx)
-                        if last_tx != 0 : d_['txs'].append(last_tx)
+                        result[wallet]['nonce_chain'][chain] += total_nonce
+
+                        for protocol in nonces.items():
+                            name    = protocol[0]
+                            amount  = protocol[1]
+                            result[wallet]['nonce_protocols'][name] += amount
+
+                        if first_tx     != 0    : d_['txs'].append(first_tx)
+                        if last_tx      != 0    : d_['txs'].append(last_tx)
 
                         if type_ == 'eth':
                             d_['value_eth'].append(total_value)
@@ -297,12 +323,34 @@ def send_result(results):
         'value_eth': [],
         'tx_amount': [],
         'days_amount': [],
+        'tx_amount_chains': {
+            "arbitrum"  : [],
+            "optimism"  : [],
+            "avalanche" : [],
+            "bsc"       : [],
+            "polygon"   : [],
+            "fantom"    : [],
+            "ethereum"  : []
+        },
+        'tx_amount_protocols': {
+            "aptosbridge"   : [],
+            "stargate"      : [],
+            "testnetbridge" : [],
+            "woofi"         : [],
+            "holograph"     : [],
+            "bitcoinbridge" : [],
+            "harmony"       : [],
+            "core"          : [],
+        },
     }
 
     with open(f'{outfile}{FILE_NAME}.csv', 'w', newline='') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
         
-        spamwriter.writerow(['number', 'wallet', 'tx_amount', 'value_erc20', 'value_eth', 'first_tx', 'last_tx', 'number_of_days_between_first_and_last_tx'])
+        csv_list = [
+            ['number', 'wallet', 'tx_amount', 'value_erc20', 'value_eth', 'first_tx', 'last_tx', 'number_of_days_between_first_and_last_tx'],
+            []
+        ]
 
         # просто выписываем все результаты
         zero = 0
@@ -316,17 +364,52 @@ def send_result(results):
                 first_tx    = wallet[1]['first_tx']
                 last_tx     = wallet[1]['last_tx']
                 tx_amount   = wallet[1]['nonce']
-                value_erc20       = wallet[1]['value_erc20']
-                value_erc20       = round_to(value_erc20)
-                value_eth       = wallet[1]['value_eth']
-                value_eth       = round_to(value_eth)
+                value_erc20 = wallet[1]['value_erc20']
+                value_erc20 = round_to(value_erc20)
+                value_eth   = wallet[1]['value_eth']
+                value_eth   = round_to(value_eth)
+
+                nonce_chains    = wallet[1]['nonce_chain']
+                nonce_protocols = wallet[1]['nonce_protocols']
+
+                for nonce_chain in nonce_chains.items():
+                    chain = nonce_chain[0]
+                    nonce = nonce_chain[1]
+                    if CSV_WRITE_CHAINS == True: 
+                        if chain not in csv_list[0]:
+                            csv_list[0].append(chain)
+
+                    if nonce < MIN_TX_AMOUNT_CHAINS[chain]:
+                        w_['tx_amount_chains'][chain].append(address)
+
+                for nonce_protocol in nonce_protocols.items():
+                    name  = nonce_protocol[0]
+                    nonce = nonce_protocol[1]
+                    if CSV_WRITE_PROTOCOLS == True: 
+                        if name not in csv_list[0]:
+                            csv_list[0].append(name)
+
+                    if nonce < MIN_TX_AMOUNT_PROTOCOLS[name]:
+                        w_['tx_amount_protocols'][name].append(address)
 
                 first_tx_date   = datetime.fromtimestamp(first_tx).strftime('%d-%m-%y')
                 last_tx_date    = datetime.fromtimestamp(last_tx).strftime('%d-%m-%y')
 
                 days_amount = compare_date(first_tx_date, last_tx_date)
 
-                spamwriter.writerow([zero, address, tx_amount, value_erc20, value_eth, first_tx_date, last_tx_date, days_amount])
+                w2_list = [zero, address, tx_amount, value_erc20, value_eth, first_tx_date, last_tx_date, days_amount]
+
+                if CSV_WRITE_CHAINS == True:
+                    for nonce_chain in nonce_chains.items():
+                        nonce = nonce_chain[1]
+                        w2_list.append(nonce)
+
+                if CSV_WRITE_PROTOCOLS == True:
+                    for nonce_protocol in nonce_protocols.items():
+                        nonce = nonce_protocol[1]
+                        w2_list.append(nonce)
+
+                csv_list[1].append(w2_list)
 
                 if value_erc20 < MIN_VALUE_ERC20:
                     w_['value_erc20'].append(address)
@@ -338,6 +421,11 @@ def send_result(results):
                     w_['tx_amount'].append(address)
                 if days_amount < DAYS_AMOUNT:
                     w_['days_amount'].append(address)
+
+
+        spamwriter.writerow(csv_list[0])
+        for items in csv_list[1]:
+            spamwriter.writerow(items)
 
         color = 'magenta'
         if len(w_['value_erc20']) > 0:
@@ -395,6 +483,37 @@ def send_result(results):
                 cprint(wallet, 'white')
                 spamwriter.writerow([zero, wallet])
 
+
+        for items in w_['tx_amount_chains'].items():
+            chain   = items[0]
+            wallets = items[1]
+            if len(wallets) > 0:
+                spamwriter.writerow([])
+                spamwriter.writerow(['number', f'tx_amount in {chain} < {MIN_TX_AMOUNT_CHAINS[chain]}'])
+                cprint(f'\nНа этих кошельках кол-во транзакций в {chain} < {MIN_TX_AMOUNT_CHAINS[chain]} :', color)
+
+                zero = 0
+                for wallet in wallets:
+                    zero += 1
+                    cprint(wallet, 'white')
+                    spamwriter.writerow([zero, wallet])
+
+        for items in w_['tx_amount_protocols'].items():
+            name    = items[0]
+            wallets = items[1]
+            if len(wallets) > 0:
+                spamwriter.writerow([])
+                spamwriter.writerow(['number', f'tx_amount in {name} < {MIN_TX_AMOUNT_PROTOCOLS[name]}'])
+                cprint(f'\nНа этих кошельках кол-во транзакций в {name} < {MIN_TX_AMOUNT_PROTOCOLS[name]} :', color)
+
+                zero = 0
+                for wallet in wallets:
+                    zero += 1
+                    cprint(wallet, 'white')
+                    spamwriter.writerow([zero, wallet])
+
+
+
         cprint(f'\nРезультаты записаны в файл : {outfile}{FILE_NAME}.csv\n', 'blue')
 
 
@@ -410,7 +529,6 @@ if __name__ == "__main__":
     cprint(RUN_TEXT, RUN_COLOR)
     cprint(f'\nsubscribe to us : https://t.me/hodlmodeth\n', RUN_COLOR)
 
-
     start = time.perf_counter()
 
     loop = asyncio.get_event_loop()
@@ -423,5 +541,7 @@ if __name__ == "__main__":
 
     fin = round((time.perf_counter() - start), 1)
     cprint(f'finish : {fin}', 'blue')
+
+
 
 
