@@ -3,31 +3,36 @@
 Скрипт парсит все транзакции через сканы, ищет совпадения по контракту из модулей (ниже) и выписывает в csv файл результат.
 
 1. testnet bridge : 
-- arbitrum => goerli (eth) 
-- optimism => goerli (eth) 
+- arbitrum  => goerli (eth) 
+- optimism  => goerli (eth) 
 2. stargate : 
-- arbitrum => chain (eth / usdc / usdt)
-- optimism => chain (eth / usdc)
-- polygon => chain (usdc / usdt)
-- fantom => chain (usdc)
-- ethereum => chain (eth / usdc / usdt)
-- avalanche  => chain (usdc / usdt)
-- bsc  => chain (usdt)
+- arbitrum  => chain (eth / usdc / usdt)
+- optimism  => chain (eth / usdc)
+- polygon   => chain (usdc / usdt)
+- fantom    => chain (usdc)
+- ethereum  => chain (eth / usdc / usdt)
+- avalanche => chain (usdc / usdt)
+- bsc       => chain (usdt)
 3. woofi :
-- arbitrum => chain (eth)
-- optimism => chain (eth)
+- arbitrum  => chain (eth / usdc)
+- optimism  => chain (eth)
+- polygon   => chain (matic / usdc)
+- bsc       => chain (bnb)
+- fantom    => chain (usdc)
+- avalanche => chain (avax / usdc)
 4. aptosbridge :
-- arbitrum => aptos (eth)
-- bsc => aptos (usdt / usdc)
+- arbitrum  => aptos (eth)
+- bsc       => aptos (usdt / usdc)
+- avalanche => aptos (usdc)
 5. bitcoin bridge :
 - avalanche, arbitrum, optimism, bsc, polygon
 6. holograph :
 - avalanche => chain (nft)
-- polygon => chain (nft)
+- polygon   => chain (nft)
 7. harmony :
-- bsc => harmony (bnb)
+- bsc       => harmony (bnb)
 8. core :
-- bsc => core (usdt / usdc)
+- bsc       => core (usdt / usdc)
 
 
 # Настройка :
