@@ -111,6 +111,7 @@ def get_data_new():
                                 "bitcoinbridge": 0,
                                 "harmony": 0,
                                 "core": 0,
+                                "angle": 0,
                             },
                             "nonces": {
                                 "aptosbridge": 0,
@@ -121,6 +122,7 @@ def get_data_new():
                                 "bitcoinbridge": 0,
                                 "harmony": 0,
                                 "core": 0,
+                                "angle": 0,
                             }
                         }
                     }
@@ -251,6 +253,7 @@ def get_results(TOTAL):
                             "bitcoinbridge": 0,
                             "harmony": 0,
                             "core": 0,
+                            "angle": 0,
                         }
                     }
                 }
@@ -323,6 +326,7 @@ def send_result(results):
         'value_eth': [],
         'tx_amount': [],
         'days_amount': [],
+        'amount_chains': [],
         'tx_amount_chains': {
             "arbitrum"  : [],
             "optimism"  : [],
@@ -341,6 +345,7 @@ def send_result(results):
             "bitcoinbridge" : [],
             "harmony"       : [],
             "core"          : [],
+            "angle"         : [],
         },
     }
 
@@ -348,7 +353,7 @@ def send_result(results):
         spamwriter = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
         
         csv_list = [
-            ['number', 'wallet', 'tx_amount', 'value_erc20', 'value_eth', 'first_tx', 'last_tx', 'number_of_days_between_first_and_last_tx'],
+            ['number', 'wallet', 'tx_amount', 'amount_chains', 'value_erc20', 'value_eth', 'first_tx', 'last_tx', 'number_of_days_between_first_and_last_tx'],
             []
         ]
 
@@ -372,12 +377,16 @@ def send_result(results):
                 nonce_chains    = wallet[1]['nonce_chain']
                 nonce_protocols = wallet[1]['nonce_protocols']
 
+                amount_chains = 0
                 for nonce_chain in nonce_chains.items():
                     chain = nonce_chain[0]
                     nonce = nonce_chain[1]
                     if CSV_WRITE_CHAINS == True: 
                         if chain not in csv_list[0]:
                             csv_list[0].append(chain)
+
+                    if nonce > 0:
+                        amount_chains += 1
 
                     if nonce < MIN_TX_AMOUNT_CHAINS[chain]:
                         w_['tx_amount_chains'][chain].append(address)
@@ -397,7 +406,7 @@ def send_result(results):
 
                 days_amount = compare_date(first_tx_date, last_tx_date)
 
-                w2_list = [zero, address, tx_amount, value_erc20, value_eth, first_tx_date, last_tx_date, days_amount]
+                w2_list = [zero, address, tx_amount, amount_chains, value_erc20, value_eth, first_tx_date, last_tx_date, days_amount]
 
                 if CSV_WRITE_CHAINS == True:
                     for nonce_chain in nonce_chains.items():
@@ -421,6 +430,8 @@ def send_result(results):
                     w_['tx_amount'].append(address)
                 if days_amount < DAYS_AMOUNT:
                     w_['days_amount'].append(address)
+                if amount_chains < MIN_AMOUNT_CHAINS:
+                    w_['amount_chains'].append(address)
 
 
         spamwriter.writerow(csv_list[0])
@@ -468,6 +479,17 @@ def send_result(results):
 
             zero = 0
             for wallet in w_['tx_amount']:
+                zero += 1
+                cprint(wallet, 'white')
+                spamwriter.writerow([zero, wallet])
+
+        if len(w_['amount_chains']) > 0:
+            spamwriter.writerow([])
+            spamwriter.writerow(['number', f'amount_chains < {MIN_AMOUNT_CHAINS}'])
+            cprint(f'\nНа этих кошельках кол-во заюзанных сетей < {MIN_AMOUNT_CHAINS} :', color)
+
+            zero = 0
+            for wallet in w_['amount_chains']:
                 zero += 1
                 cprint(wallet, 'white')
                 spamwriter.writerow([zero, wallet])
