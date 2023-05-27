@@ -4,10 +4,11 @@
 CSV_WRITE_CHAINS    = True # True если нужно записывать в csv информацию о кол-ве транзакций в каждой сети.         False если не нужно
 CSV_WRITE_PROTOCOLS = True # True если нужно записывать в csv информацию о кол-ве транзакций в каждом протоколе.    False если не нужно
 
-MIN_VALUE_ERC20 = 0 # $
-MIN_VALUE_ETH   = 0.1 # eth
-MIN_TX_AMOUNT   = 20
-LAST_DATE_TX    = '15-05-2023' # d-m-y
+MIN_VALUE_ERC20     = 0 # $
+MIN_VALUE_ETH       = 0.1 # eth
+MIN_TX_AMOUNT       = 20
+LAST_DATE_TX        = '15-05-2023' # d-m-y
+MIN_AMOUNT_CHAINS   = 4 # сколько заюзанных сетей 
 
 # если кол-во дней между первой и последней транзакцией меньше этого числа, кошелек выделяется
 DAYS_AMOUNT     = 30
@@ -43,7 +44,8 @@ MIN_TX_AMOUNT_PROTOCOLS = {
     "holograph"     : 1,
     "bitcoinbridge" : 0,
     "harmony"       : 0,
-    "core"          : 0
+    "core"          : 0,
+    "angle"         : 0,
 }
 
 FILE_NAME = 'layerzero' # имя файла csv, который скрипт создаст сам
@@ -58,31 +60,36 @@ FILE_NAME = 'layerzero' # имя файла csv, который скрипт с�
 Сейчас добавлена проверка всех транзакций в модулях :
 
 1. testnet bridge : 
-- arbitrum => goerli (eth) 
-- optimism => goerli (eth) 
+- arbitrum  => goerli (eth) 
+- optimism  => goerli (eth) 
 2. stargate : 
-- arbitrum => chain (eth / usdc / usdt)
-- optimism => chain (eth / usdc)
-- polygon => chain (usdc / usdt)
-- fantom => chain (usdc)
-- ethereum => chain (eth / usdc / usdt)
-- avalanche  => chain (usdc / usdt)
-- bsc  => chain (usdt)
+- arbitrum  => chain (eth / usdc / usdt)
+- optimism  => chain (eth / usdc)
+- polygon   => chain (usdc / usdt)
+- fantom    => chain (usdc)
+- ethereum  => chain (eth / usdc / usdt)
+- avalanche => chain (usdc / usdt)
+- bsc       => chain (usdt)
 3. woofi :
-- arbitrum => chain (eth)
-- optimism => chain (eth)
+- arbitrum  => chain (eth / usdc)
+- optimism  => chain (eth)
+- polygon   => chain (matic / usdc)
+- bsc       => chain (bnb)
+- fantom    => chain (usdc)
+- avalanche => chain (avax / usdc)
 4. aptosbridge :
-- arbitrum => aptos (eth)
-- bsc => aptos (usdt / usdc)
+- arbitrum  => aptos (eth)
+- bsc       => aptos (usdt / usdc)
+- avalanche => aptos (usdc)
 5. bitcoin bridge :
 - avalanche, arbitrum, optimism, bsc, polygon
 6. holograph :
 - avalanche => chain (nft)
-- polygon => chain (nft)
+- polygon   => chain (nft)
 7. harmony :
-- bsc => harmony (bnb)
+- bsc       => harmony (bnb)
 8. core :
-- bsc => core (usdt / usdc)
+- bsc       => core (usdt / usdc)
 
 '''
 
@@ -102,11 +109,13 @@ token_contracts = {
         'USDT': '0x55d398326f99059ff775485246999027b3197955',
         'USDC': '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
         'BTCB': '0x2297aEbD383787A160DD0d9F71508148769342E3',
+        'agEUR': '0x12f31B73D812C6Bb0d735a218c086d44D5fe5f89',
     },
     'polygon': {
         'USDT': '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
         'USDC': '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         'BTCB': '0x2297aEbD383787A160DD0d9F71508148769342E3',
+        'agEUR': '0xE0B52e49357Fd4DAf2c15e02058DCE6BC0057db4',
     },
     'fantom': {
         'USDT': '0x049d68029688eabf473097a2fc38ef61633a3c7a',
@@ -133,6 +142,7 @@ contracts_erc20 = {
         token_contracts['arbitrum']['USDC'] : 
             {
                 'stargate': '0x892785f33cdee22a30aef750f285e18c18040c3e',
+                'woofi': '0x4ab421de52b3112d02442b040dd3dc73e8af63b5',
             },
         token_contracts['arbitrum']['BTCB'] : 
             {
@@ -166,6 +176,10 @@ contracts_erc20 = {
             {
                 'bitcoinbridge': '0x0000000000000000000000000000000000000000',
             },
+        token_contracts['bsc']['agEUR'] : 
+            {
+                'angle': '0xe9f183fc656656f1f17af1f2b0df79b8ff9ad8ed',
+            },
     },
     'polygon': {
         token_contracts['polygon']['USDT'] : 
@@ -175,10 +189,15 @@ contracts_erc20 = {
         token_contracts['polygon']['USDC'] : 
             {
                 'stargate': '0x1205f31718499dbf1fca446663b532ef87481fe1',
+                'woofi': '0xaa9c15cd603428ca8ddd45e933f8efe3afbcc173',
             },
         token_contracts['polygon']['BTCB'] : 
             {
                 'bitcoinbridge': '0x0000000000000000000000000000000000000000',
+            },
+        token_contracts['polygon']['agEUR'] : 
+            {
+                'angle': '0x0c1ebbb61374da1a8c57cb6681bf27178360d36f',
             },
     },
     'fantom': {
@@ -186,6 +205,7 @@ contracts_erc20 = {
         token_contracts['fantom']['USDC'] : 
             {
                 'stargate': '0x12edea9cd262006cc3c4e77c90d2cd2dd4b1eb97',
+                'woofi': '0x72dc7fa5eeb901a34173c874a7333c8d1b34bca9',
             },
     },
     'ethereum': {
@@ -210,6 +230,8 @@ contracts_erc20 = {
         token_contracts['avalanche']['USDC'] : 
             {
                 'stargate': '0x1205f31718499dbf1fca446663b532ef87481fe1',
+                'woofi': '0x51af494f1b4d3f77835951fa827d66fc4a18dae8',
+                'aptosbridge': '0xa5972eee0c9b5bbb89a5b16d1d65f94c9ef25166',
             },
     },
 }
@@ -230,15 +252,18 @@ contracts_eth = {
     },
     'avalanche': {
         'holograph': '0xd85b5e176a30edd1915d6728faebd25669b60d8b',
+        'woofi': '0x51AF494f1B4d3f77835951FA827D66fc4A18Dae8',
     },
     'ethereum': {
         'stargate': '0x150f94B44927F078737562f0fcF3C95c01Cc2376',
     },
     'polygon': {
         'holograph': '0xd85b5e176a30edd1915d6728faebd25669b60d8b',
+        'woofi': '0xAA9c15cd603428cA8ddD45e933F8EfE3Afbcc173',
     },
     'bsc': {
         'harmony': '0x128AEdC7f41ffb82131215e1722D8366faaD0CD4',
+        'woofi': '0x81004C9b697857fD54E137075b51506c739EF439',
     },
 }
 
