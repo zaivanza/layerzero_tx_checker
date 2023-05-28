@@ -164,7 +164,7 @@ contracts_erc20 = {
             {
                 'aptosbridge': '0x2762409Baa1804D94D8c0bCFF8400B78Bf915D5B',
                 'core': '0x52e75d318cfb31f9a2edfa2dfee26b161255b233',
-                'stargate': '0x68c6c27fb0e02285829e69240be16f32c5f8befe',
+                'stargate': '0x9aa83081aa06af7208dcc7a4cb72c94d057d2cda',
             },
             
         token_contracts['bsc']['USDC'] : 
