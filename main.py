@@ -1,5 +1,6 @@
 from config import *
 
+
 def round_to(num, digits=3):
     if num == 0: return 0
     try: 
@@ -8,19 +9,75 @@ def round_to(num, digits=3):
         return round(num, scale)
     except: return num
 
+def get_prices():
+
+    try:
+
+        logger.info('get prices')
+
+        prices = {
+            'ETH': 0, 
+            'BNB': 0, 
+            'AVAX': 0, 
+            'MATIC': 0, 
+            'AVAX': 0, 
+            'FTM': 0,
+            'ONE': 0,
+            'BTC': 0,
+            'CORE': 0,
+            'USDT': 0,
+            'USDC': 0,
+            'BUSD': 0,
+            'agEUR': 0
+        }
+
+        for symbol in prices:
+
+            url =f'https://min-api.cryptocompare.com/data/price?fsym={symbol}&tsyms=USDT'
+            response = requests.get(url)
+
+            try:
+                result  = [response.json()]
+                price   = result[0]['USDT']
+                prices[symbol] = float(price)
+            except Exception as error:
+                logger.error(f'{error}. set price : 0')
+                prices[symbol] = 0
+
+        logger.info(prices)
+        print()
+
+        return prices
+    
+    except Exception as error:
+        logger.error(f'{error}. Try again')
+        time.sleep(1)
+        return get_prices()
+    
+def get_value(token, amount):
+
+    if token == 'BTC.b': token = 'BTC'
+    if token == 'BSC-USD': token = 'USDT'
+    if token == 'USDC.e': token = 'USDC'
+
+    price = PRICES[token]
+    value = amount * price
+    return value
+
 datas = {}
 async def get_get(session, wallet, chain, token):
+
 
     try:
 
         api_key = random.choice(api_keys[chain])
 
         if token == 'native':
-            url = f'{base_url[chain]}/api?module=account&action=txlist&address={wallet}&startblock=1&endblock=99999999&sort=asc&apikey={api_key}'
+            url = f'{base_url[chain]}/api?module=account&action=txlist&address={wallet}&startblock=1&endblock=9999999999&sort=asc&apikey={api_key}'
             type_ = 'eth'
 
         else:
-            url = f'{base_url[chain]}/api?module=account&action=tokentx&contractaddress={token}&address={wallet}&startblock=1&endblock=99999999&sort=asc&apikey={api_key}'
+            url = f'{base_url[chain]}/api?module=account&action=tokentx&contractaddress={token}&address={wallet}&startblock=1&endblock=9999999999&sort=asc&apikey={api_key}'
             type_ = 'erc20'
 
         async with session.get(url, ssl=False, timeout=20) as resp:
@@ -29,14 +86,14 @@ async def get_get(session, wallet, chain, token):
             datas[wallet][type_][chain][token].update(resp_json)
 
         if datas[wallet][type_][chain][token]['result'] == "Max rate limit reached":
-            await asyncio.sleep(10)
+            await asyncio.sleep(1)
             return await get_get(session, wallet, chain, token)
         
         elif datas[wallet][type_][chain][token]['result'] == "Invalid API Key":
             logger.error(f'{wallet} : {chain} : Invalid API Key')
 
         elif datas[wallet][type_][chain][token]['result'] == "Max rate limit reached, please use API Key for higher rate limit":
-            await asyncio.sleep(10)
+            await asyncio.sleep(1)
             return await get_get(session, wallet, chain, token)
 
         else: 
@@ -52,9 +109,10 @@ async def get_get(session, wallet, chain, token):
 
 async def main(wallet):
 
-    async with aiohttp.ClientSession() as session:
-        tasks = []
+    tasks = []
 
+    async with aiohttp.ClientSession() as session:
+    
         datas.update({wallet: {
             "eth" : {}, "erc20" : {},
         }})
@@ -100,6 +158,7 @@ def get_data_new():
                         chain : {
                             "first_tx": 0,
                             "last_tx": 0,
+                            "usd_value": 0,
                             "total_value": 0,
                             "total_nonce": 0,
                             "values": {
@@ -136,6 +195,10 @@ def get_data_new():
                     for data in result_:
 
                         try:
+                            
+                            if type_ == 'eth':
+                                status_tx = int(data['isError'])
+                                if status_tx == 1: continue
                         
                             contract    = data['to'].upper() # contract / address
                             value       = int(data['value'])
@@ -144,12 +207,14 @@ def get_data_new():
                             if type_ == 'eth':
                                 decimals = 18
                                 contracts = contracts_eth
+                                symbol = native_tokens[chain]
                             elif type_ == 'erc20':
                                 decimals = int(data['tokenDecimal'])
                                 contracts = contracts_erc20
+                                symbol = data['tokenSymbol']
 
                             human_value = round_to(decimalToInt(value, decimals))
-
+                            usd_value   = get_value(symbol, human_value)
 
                             if type_ == 'eth':
                                 for items in contracts[chain].items():
@@ -166,6 +231,8 @@ def get_data_new():
 
                                         massive[wallet][type_][chain]['nonces'][name]  += 1
                                         massive[wallet][type_][chain]['total_nonce']   += 1
+
+                                        massive[wallet][type_][chain]['usd_value']     += usd_value
 
                                         times.append(timestamp)
 
@@ -191,6 +258,8 @@ def get_data_new():
 
                                                 massive[wallet][type_][chain]['nonces'][name]  += 1
                                                 massive[wallet][type_][chain]['total_nonce']   += 1
+
+                                                massive[wallet][type_][chain]['usd_value']     += usd_value
 
                                                 times.append(timestamp)
 
@@ -235,6 +304,7 @@ def get_results(TOTAL):
                         'nonce': 0,
                         'value_erc20': 0,
                         'value_eth': 0,
+                        'value': 0,
                         'nonce_chain': {
                             "arbitrum": 0,
                             "optimism": 0,
@@ -267,8 +337,11 @@ def get_results(TOTAL):
                         total_value = items[1]['total_value']
                         total_nonce = items[1]['total_nonce']
                         nonces      = items[1]['nonces']
+                        value       = round_to(items[1]['usd_value'])
 
                         result[wallet]['nonce_chain'][chain] += total_nonce
+
+                        result[wallet]['value'] += value
 
                         for protocol in nonces.items():
                             name    = protocol[0]
@@ -322,8 +395,7 @@ def send_result(results):
 
     w_ = {
         'date': [],
-        'value_erc20': [],
-        'value_eth': [],
+        'value': [],
         'tx_amount': [],
         'days_amount': [],
         'amount_chains': [],
@@ -353,7 +425,7 @@ def send_result(results):
         spamwriter = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
         
         csv_list = [
-            ['number', 'wallet', 'tx_amount', 'amount_chains', 'value_erc20', 'value_eth', 'first_tx', 'last_tx', 'number_of_days_between_first_and_last_tx'],
+            ['number', 'wallet', 'tx_amount', 'amount_chains', 'value $', 'first_tx', 'last_tx', 'number_of_days_between_first_and_last_tx'],
             []
         ]
 
@@ -369,10 +441,7 @@ def send_result(results):
                 first_tx    = wallet[1]['first_tx']
                 last_tx     = wallet[1]['last_tx']
                 tx_amount   = wallet[1]['nonce']
-                value_erc20 = wallet[1]['value_erc20']
-                value_erc20 = round_to(value_erc20)
-                value_eth   = wallet[1]['value_eth']
-                value_eth   = round_to(value_eth)
+                value       = int(wallet[1]['value'])
 
                 nonce_chains    = wallet[1]['nonce_chain']
                 nonce_protocols = wallet[1]['nonce_protocols']
@@ -406,7 +475,7 @@ def send_result(results):
 
                 days_amount = compare_date(first_tx_date, last_tx_date)
 
-                w2_list = [zero, address, tx_amount, amount_chains, value_erc20, value_eth, first_tx_date, last_tx_date, days_amount]
+                w2_list = [zero, address, tx_amount, amount_chains, value, first_tx_date, last_tx_date, days_amount]
 
                 if CSV_WRITE_CHAINS == True:
                     for nonce_chain in nonce_chains.items():
@@ -420,10 +489,8 @@ def send_result(results):
 
                 csv_list[1].append(w2_list)
 
-                if value_erc20 < MIN_VALUE_ERC20:
-                    w_['value_erc20'].append(address)
-                if value_eth < MIN_VALUE_ETH:
-                    w_['value_eth'].append(address)
+                if value < MIN_VALUE:
+                    w_['value'].append(address)
                 if last_tx < time_stamp:
                     w_['date'].append(address)
                 if tx_amount < MIN_TX_AMOUNT:
@@ -439,27 +506,17 @@ def send_result(results):
             spamwriter.writerow(items)
 
         color = 'magenta'
-        if len(w_['value_erc20']) > 0:
+        if len(w_['value']) > 0:
             spamwriter.writerow([])
-            spamwriter.writerow(['number', f'value_erc20 < {MIN_VALUE_ERC20}'])
-            cprint(f'\nНа этих кошельках value_erc20 < {MIN_VALUE_ERC20} :', color)
+            spamwriter.writerow(['number', f'value < {MIN_VALUE}'])
+            cprint(f'\nНа этих кошельках value < {MIN_VALUE} :', color)
 
             zero = 0
-            for wallet in w_['value_erc20']:
+            for wallet in w_['value']:
                 zero += 1
                 cprint(wallet, 'white')
                 spamwriter.writerow([zero, wallet])
 
-        if len(w_['value_eth']) > 0:
-            spamwriter.writerow([])
-            spamwriter.writerow(['number', f'value_eth < {MIN_VALUE_ETH}'])
-            cprint(f'\nНа этих кошельках value_eth < {MIN_VALUE_ETH} :', color)
-
-            zero = 0
-            for wallet in w_['value_eth']:
-                zero += 1
-                cprint(wallet, 'white')
-                spamwriter.writerow([zero, wallet])
 
         if len(w_['date']) > 0:
             spamwriter.writerow([])
@@ -540,10 +597,20 @@ def send_result(results):
 
 
 async def run():
-    tasks = []
-    for wallet in WALLETS:
-        tasks.append(asyncio.create_task(main(wallet)))
-    await asyncio.gather(*tasks)
+
+    wallets_list = (list(func_chunks_generators(WALLETS, 50)))
+
+    lens = 0
+    for wallets in wallets_list:
+
+        lens = len(wallets) + lens
+
+        tasks = []
+        for wallet in wallets:
+            tasks.append(asyncio.create_task(main(wallet)))
+
+        await asyncio.gather(*tasks)
+        time.sleep(3)
     
 
 if __name__ == "__main__":
@@ -552,6 +619,8 @@ if __name__ == "__main__":
     cprint(f'\nsubscribe to us : https://t.me/hodlmodeth\n', RUN_COLOR)
 
     start = time.perf_counter()
+
+    PRICES = get_prices()
 
     loop = asyncio.get_event_loop()
     loop.run_until_complete(run())
@@ -563,6 +632,7 @@ if __name__ == "__main__":
 
     fin = round((time.perf_counter() - start), 1)
     cprint(f'finish : {fin}', 'blue')
+
 
 
 
