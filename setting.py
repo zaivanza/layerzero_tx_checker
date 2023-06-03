@@ -4,11 +4,10 @@
 CSV_WRITE_CHAINS    = True # True если нужно записывать в csv информацию о кол-ве транзакций в каждой сети.         False если не нужно
 CSV_WRITE_PROTOCOLS = True # True если нужно записывать в csv информацию о кол-ве транзакций в каждом протоколе.    False если не нужно
 
-MIN_VALUE_ERC20     = 0 # $
-MIN_VALUE_ETH       = 0.1 # eth
-MIN_TX_AMOUNT       = 20
-LAST_DATE_TX        = '15-05-2023' # d-m-y
-MIN_AMOUNT_CHAINS   = 4 # сколько заюзанных сетей 
+MIN_VALUE           = 4000 # $
+MIN_TX_AMOUNT       = 15
+LAST_DATE_TX        = '20-05-2023' # d-m-y
+MIN_AMOUNT_CHAINS   = 3 # сколько заюзанных сетей 
 
 # если кол-во дней между первой и последней транзакцией меньше этого числа, кошелек выделяется
 DAYS_AMOUNT     = 30
@@ -21,16 +20,16 @@ chains = [
     'bsc',
     'polygon',
     'fantom',
-    'ethereum',
+    # 'ethereum',
 ]
 
 # если кол-во транзакций в сети будет меньше назначенного числа, кошелек выделяется
 MIN_TX_AMOUNT_CHAINS = {
-    "arbitrum"  : 0,
+    "arbitrum"  : 5,
     "optimism"  : 0,
-    "avalanche" : 0,
-    "bsc"       : 10,
-    "polygon"   : 0,
+    "avalanche" : 1,
+    "bsc"       : 3,
+    "polygon"   : 1,
     "fantom"    : 0,
     "ethereum"  : 0
 }
@@ -110,6 +109,7 @@ token_contracts = {
         'USDC': '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
         'BTCB': '0x2297aEbD383787A160DD0d9F71508148769342E3',
         'agEUR': '0x12f31B73D812C6Bb0d735a218c086d44D5fe5f89',
+        'BUSD' : '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
     },
     'polygon': {
         'USDT': '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
@@ -179,6 +179,10 @@ contracts_erc20 = {
         token_contracts['bsc']['agEUR'] : 
             {
                 'angle': '0xe9f183fc656656f1f17af1f2b0df79b8ff9ad8ed',
+            },
+        token_contracts['bsc']['BUSD'] : 
+            {
+                'stargate': '0x98a5737749490856b401db5dc27f522fc314a4e1',
             },
     },
     'polygon': {
