@@ -56,6 +56,16 @@ base_url = {
     'ethereum'  : 'https://api.etherscan.io',
 }
 
+native_tokens = {
+    'arbitrum'  : 'ETH',
+    'optimism'  : 'ETH',
+    'avalanche' : 'AVAX',
+    'bsc'       : 'BNB',
+    'polygon'   : 'MATIC',
+    'fantom'    : 'FTM',
+    'ethereum'  : 'ETH',
+}
+
 
 def call_json(result, outfile):
     with open(f"{outfile}.json", "w") as file:
@@ -66,6 +76,12 @@ def intToDecimal(qty, decimal):
 
 def decimalToInt(qty, decimal):
     return qty/ int("".join((["1"]+ ["0"]*decimal)))
+
+# разбивка массива на части по кол-ву элементов
+def func_chunks_generators(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i: i + n]
+
 
 text1 = '''
  /$$   /$$  /$$$$$$  /$$$$$$$  /$$       /$$      /$$  /$$$$$$  /$$$$$$$ 
@@ -97,5 +113,6 @@ colors = ['green', 'yellow', 'blue', 'magenta', 'cyan']
 
 RUN_TEXT = random.choice(texts)
 RUN_COLOR = random.choice(colors)
+
 
 
