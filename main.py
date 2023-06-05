@@ -284,96 +284,97 @@ def get_results(TOTAL):
     for account in TOTAL:
 
         for items in account.items():
+                
+            wallet = items[0]
+            d_ = {
+                'txs': [],
+                'value_erc20': [],
+                'value_eth': [],
+                'nonce': [],
+            }
 
-            try:
-                    
-                wallet = items[0]
-                d_ = {
-                    'txs': [],
-                    'value_erc20': [],
-                    'value_eth': [],
-                    'nonce': [],
-                }
-
-                result = {
-                    wallet : {
-                        'first_tx': 0,
-                        'last_tx': 0,
-                        'nonce': 0,
-                        'value_erc20': 0,
-                        'value_eth': 0,
-                        'value': 0,
-                        'nonce_chain': {
-                            "arbitrum": 0,
-                            "optimism": 0,
-                            "avalanche": 0,
-                            "bsc": 0,
-                            "polygon": 0,
-                            "fantom": 0,
-                            "ethereum": 0
-                        },
-                        'nonce_protocols': {
-                            "aptosbridge": 0,
-                            "stargate": 0,
-                            "testnetbridge": 0,
-                            "woofi": 0,
-                            "holograph": 0,
-                            "bitcoinbridge": 0,
-                            "harmony": 0,
-                            "core": 0,
-                            "angle": 0,
-                        }
+            result = {
+                wallet : {
+                    'first_tx': 0,
+                    'last_tx': 0,
+                    'nonce': 0,
+                    'value_erc20': 0,
+                    'value_eth': 0,
+                    'value': 0,
+                    'nonce_chain': {
+                        "arbitrum": 0,
+                        "optimism": 0,
+                        "avalanche": 0,
+                        "bsc": 0,
+                        "polygon": 0,
+                        "fantom": 0,
+                        "ethereum": 0
+                    },
+                    'nonce_protocols': {
+                        "aptosbridge": 0,
+                        "stargate": 0,
+                        "testnetbridge": 0,
+                        "woofi": 0,
+                        "holograph": 0,
+                        "bitcoinbridge": 0,
+                        "harmony": 0,
+                        "core": 0,
+                        "angle": 0,
                     }
                 }
+            }
+            for items in items[1].items():
+                type_ = items[0]
+                
                 for items in items[1].items():
-                    type_ = items[0]
-                    
-                    for items in items[1].items():
-                        chain       = items[0]
-                        first_tx    = items[1]['first_tx']
-                        last_tx     = items[1]['last_tx']
-                        total_value = items[1]['total_value']
-                        total_nonce = items[1]['total_nonce']
-                        nonces      = items[1]['nonces']
-                        value       = round_to(items[1]['usd_value'])
+                    chain       = items[0]
+                    first_tx    = items[1]['first_tx']
+                    last_tx     = items[1]['last_tx']
+                    total_value = items[1]['total_value']
+                    total_nonce = items[1]['total_nonce']
+                    nonces      = items[1]['nonces']
+                    value       = round_to(items[1]['usd_value'])
 
-                        result[wallet]['nonce_chain'][chain] += total_nonce
+                    result[wallet]['nonce_chain'][chain] += total_nonce
 
-                        result[wallet]['value'] += value
+                    result[wallet]['value'] += value
 
-                        for protocol in nonces.items():
-                            name    = protocol[0]
-                            amount  = protocol[1]
-                            result[wallet]['nonce_protocols'][name] += amount
+                    for protocol in nonces.items():
+                        name    = protocol[0]
+                        amount  = protocol[1]
+                        result[wallet]['nonce_protocols'][name] += amount
 
-                        if first_tx     != 0    : d_['txs'].append(first_tx)
-                        if last_tx      != 0    : d_['txs'].append(last_tx)
+                    if first_tx     != 0    : d_['txs'].append(first_tx)
+                    if last_tx      != 0    : d_['txs'].append(last_tx)
 
-                        if type_ == 'eth':
-                            d_['value_eth'].append(total_value)
-                        if type_ == 'erc20':
-                            d_['value_erc20'].append(total_value)
+                    if type_ == 'eth':
+                        d_['value_eth'].append(total_value)
+                    if type_ == 'erc20':
+                        d_['value_erc20'].append(total_value)
 
-                        d_['nonce'].append(total_nonce)
+                    d_['nonce'].append(total_nonce)
 
-                d_['txs'].sort()
+            d_['txs'].sort()
 
-                result[wallet]['first_tx']      = d_['txs'][0]
-                result[wallet]['last_tx']       = d_['txs'][-1]
-                result[wallet]['nonce']         = sum(d_['nonce'])
-                result[wallet]['value_erc20']   = sum(d_['value_erc20'])
-                result[wallet]['value_eth']     = sum(d_['value_eth'])
+            if len(d_['txs']) > 0:
+                result[wallet]['first_tx']  = d_['txs'][0]
+                result[wallet]['last_tx']   = d_['txs'][-1]
+            else:
+                result[wallet]['first_tx']  = 0
+                result[wallet]['last_tx']   = 0
 
-                results.append(result)
+            result[wallet]['nonce']         = sum(d_['nonce'])
+            result[wallet]['value_erc20']   = sum(d_['value_erc20'])
+            result[wallet]['value_eth']     = sum(d_['value_eth'])
 
-            except: None
+            results.append(result)
+
 
     return results
 
 def compare_date(date_1, date_2):
 
     try:
-
         a = date_1.split('-')
         b = date_2.split('-')
 
@@ -468,10 +469,15 @@ def send_result(results):
                     if nonce < MIN_TX_AMOUNT_PROTOCOLS[name]:
                         w_['tx_amount_protocols'][name].append(address)
 
-                first_tx_date   = datetime.fromtimestamp(first_tx).strftime('%d-%m-%y')
-                last_tx_date    = datetime.fromtimestamp(last_tx).strftime('%d-%m-%y')
 
-                days_amount = compare_date(first_tx_date, last_tx_date)
+                if first_tx != 0 and last_tx != 0:
+                    first_tx_date   = datetime.fromtimestamp(first_tx).strftime('%d-%m-%y')
+                    last_tx_date    = datetime.fromtimestamp(last_tx).strftime('%d-%m-%y')
+                    days_amount     = compare_date(first_tx_date, last_tx_date)
+                else:
+                    first_tx_date   = 0
+                    last_tx_date    = 0
+                    days_amount     = 0
 
                 w2_list = [zero, address, tx_amount, amount_chains, value, first_tx_date, last_tx_date, days_amount]
 
@@ -630,6 +636,8 @@ if __name__ == "__main__":
 
     fin = round((time.perf_counter() - start), 1)
     cprint(f'finish : {fin}', 'blue')
+
+
 
 
 
