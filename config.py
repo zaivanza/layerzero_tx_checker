@@ -35,6 +35,12 @@ with open(f"{outfile}data/polygon_api.txt", "r") as f:
 with open(f"{outfile}data/ftm_api.txt", "r") as f:
     FTM_API_KEYS = [row.strip() for row in f]
 
+with open(f"{outfile}data/celo_api.txt", "r") as f:
+    CELO_API_KEYS = [row.strip() for row in f]
+
+with open(f"{outfile}data/gnosis_api.txt", "r") as f:
+    GNOSIS_API_KEYS = [row.strip() for row in f]
+
 api_keys = {
     'arbitrum'  : ARB_API_KEYS,
     'optimism'  : OPT_API_KEYS,
@@ -43,6 +49,8 @@ api_keys = {
     'polygon'   : POLYGON_API_KEYS,
     'fantom'    : FTM_API_KEYS,
     'ethereum'  : ETH_API_KEYS,
+    'celo'      : CELO_API_KEYS,
+    'gnosis'    : GNOSIS_API_KEYS,
 }
 
 # api urls
@@ -54,6 +62,8 @@ base_url = {
     'polygon'   : 'https://api.polygonscan.com',
     'fantom'    : 'https://api.ftmscan.com',
     'ethereum'  : 'https://api.etherscan.io',
+    'celo'      : 'https://api.celoscan.io',
+    'gnosis'    : 'https://api.gnosisscan.io',
 }
 
 native_tokens = {
