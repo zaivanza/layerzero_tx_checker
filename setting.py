@@ -4,10 +4,10 @@
 CSV_WRITE_CHAINS    = True # True если нужно записывать в csv информацию о кол-ве транзакций в каждой сети.         False если не нужно
 CSV_WRITE_PROTOCOLS = True # True если нужно записывать в csv информацию о кол-ве транзакций в каждом протоколе.    False если не нужно
 
-MIN_VALUE           = 4000 # $
-MIN_TX_AMOUNT       = 15
-LAST_DATE_TX        = '20-05-2023' # d-m-y
-MIN_AMOUNT_CHAINS   = 3 # сколько заюзанных сетей 
+MIN_VALUE           = 500 # $
+MIN_TX_AMOUNT       = 20
+LAST_DATE_TX        = '05-06-2023' # d-m-y
+MIN_AMOUNT_CHAINS   = 5 # сколько заюзанных сетей 
 
 # если кол-во дней между первой и последней транзакцией меньше этого числа, кошелек выделяется
 DAYS_AMOUNT     = 30
@@ -20,18 +20,22 @@ chains = [
     'bsc',
     'polygon',
     'fantom',
+    'celo',
+    'gnosis',
     # 'ethereum',
 ]
 
 # если кол-во транзакций в сети будет меньше назначенного числа, кошелек выделяется
 MIN_TX_AMOUNT_CHAINS = {
-    "arbitrum"  : 5,
+    "arbitrum"  : 0,
     "optimism"  : 0,
-    "avalanche" : 1,
-    "bsc"       : 3,
-    "polygon"   : 1,
+    "avalanche" : 0,
+    "bsc"       : 0,
+    "polygon"   : 0,
     "fantom"    : 0,
-    "ethereum"  : 0
+    "ethereum"  : 0,
+    "celo"      : 1,
+    "gnosis"    : 1,
 }
 
 # если кол-во транзакций в протоколе (смотрит во всех сетях) будет меньше назначенного числа, кошелек выделяется
@@ -40,7 +44,7 @@ MIN_TX_AMOUNT_PROTOCOLS = {
     "stargate"      : 0,
     "testnetbridge" : 0,
     "woofi"         : 0,
-    "holograph"     : 1,
+    "holograph"     : 0,
     "bitcoinbridge" : 0,
     "harmony"       : 0,
     "core"          : 0,
@@ -89,6 +93,11 @@ FILE_NAME = 'layerzero' # имя файла csv, который скрипт с�
 - bsc       => harmony (bnb)
 8. core :
 - bsc       => core (usdt / usdc)
+8. angle :
+- bsc       => chain (agEUR)
+- polygon   => chain (agEUR)
+- celo      => chain (agEUR)
+- gnosis    => chain (agEUR)
 
 '''
 
@@ -129,6 +138,12 @@ token_contracts = {
         'BTCB': '0x152b9d0FdC40C096757F570A51E494bd4b943E50',
         'USDC': '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
         'USDT': '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7',
+    },
+    'celo': {
+        'agEUR': '0xc16b81af351ba9e64c1a069e3ab18c244a1e3049',
+    },
+    'gnosis': {
+        'agEUR': '0x4b1e2c2762667331bc91648052f646d1b0d35984',
     },
 }
 
@@ -236,6 +251,18 @@ contracts_erc20 = {
                 'stargate': '0x1205f31718499dbf1fca446663b532ef87481fe1',
                 'woofi': '0x51af494f1b4d3f77835951fa827d66fc4a18dae8',
                 'aptosbridge': '0xa5972eee0c9b5bbb89a5b16d1d65f94c9ef25166',
+            },
+    },
+    'gnosis': {
+        token_contracts['gnosis']['agEUR'] : 
+            {
+                'angle': '0xfa5ed56a203466cbbc2430a43c66b9d8723528e7',
+            },
+    },
+    'celo': {
+        token_contracts['celo']['agEUR'] : 
+            {
+                'angle': '0xf1ddcaca7d17f8030ab2eb54f2d9811365efe123',
             },
     },
 }
