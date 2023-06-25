@@ -65,7 +65,6 @@ def get_value(token, amount):
 datas = {}
 async def get_get(session, wallet, chain, token):
 
-
     try:
 
         api_key = random.choice(api_keys[chain])
@@ -78,21 +77,21 @@ async def get_get(session, wallet, chain, token):
             url = f'{base_url[chain]}/api?module=account&action=tokentx&contractaddress={token}&address={wallet}&startblock=1&endblock=9999999999&sort=asc&apikey={api_key}'
             type_ = 'erc20'
 
-        async with session.get(url, ssl=False, timeout=20) as resp:
+        async with session.get(url, ssl=False, timeout=10) as resp:
             resp_json = await resp.json(content_type=None)
             # print(resp_json)
             datas[wallet][type_][chain][token].update(resp_json)
 
-        if datas[wallet][type_][chain][token]['result'] == "Max rate limit reached":
+        if datas[wallet][type_][chain][token]['result'] in [
+            "Max rate limit reached", 
+            "Max rate limit reached, rate limit of 5/1sec applied", 
+            "Max rate limit reached, please use API Key for higher rate limit"
+            ]:
             await asyncio.sleep(1)
             return await get_get(session, wallet, chain, token)
         
         elif datas[wallet][type_][chain][token]['result'] == "Invalid API Key":
             logger.error(f'{wallet} : {chain} : Invalid API Key')
-
-        elif datas[wallet][type_][chain][token]['result'] == "Max rate limit reached, please use API Key for higher rate limit":
-            await asyncio.sleep(1)
-            return await get_get(session, wallet, chain, token)
 
         else: 
             logger.success(f'{wallet} : {chain}')
@@ -308,7 +307,9 @@ def get_results(TOTAL):
                         "bsc": 0,
                         "polygon": 0,
                         "fantom": 0,
-                        "ethereum": 0
+                        "ethereum": 0,
+                        "celo": 0,
+                        "gnosis": 0,
                     },
                     'nonce_protocols': {
                         "aptosbridge": 0,
@@ -405,7 +406,9 @@ def send_result(results):
             "bsc"       : [],
             "polygon"   : [],
             "fantom"    : [],
-            "ethereum"  : []
+            "ethereum"  : [],
+            "celo"      : [],
+            "gnosis"    : [],
         },
         'tx_amount_protocols': {
             "aptosbridge"   : [],
@@ -613,6 +616,7 @@ async def run():
         for wallet in wallets:
             tasks.append(asyncio.create_task(main(wallet)))
 
+
         await asyncio.gather(*tasks)
         time.sleep(3)
     
@@ -636,10 +640,5 @@ if __name__ == "__main__":
 
     fin = round((time.perf_counter() - start), 1)
     cprint(f'finish : {fin}', 'blue')
-
-
-
-
-
 
 
