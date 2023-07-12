@@ -33,12 +33,12 @@
 - bsc       => harmony (bnb)
 8. core :
 - bsc       => core (usdt / usdc)
-8. angle :
+9. angle :
 - bsc       => chain (agEUR)
 - polygon   => chain (agEUR)
 - celo      => chain (agEUR)
 - gnosis    => chain (agEUR)
-9. zkbridge :
+10. zkbridge :
 - bsc       => chain 
 - polygon   => chain 
 
