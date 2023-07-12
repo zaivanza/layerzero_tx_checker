@@ -91,7 +91,7 @@ async def get_get(session, wallet, chain, token):
             return await get_get(session, wallet, chain, token)
         
         elif datas[wallet][type_][chain][token]['result'] == "Invalid API Key":
-            logger.error(f'{wallet} : {chain} : Invalid API Key')
+            logger.error(f'{wallet} : {chain} : Invalid API Key : {api_key}')
 
         else: 
             logger.success(f'{wallet} : {chain}')
@@ -168,6 +168,7 @@ def get_data_new():
                                 "harmony": 0,
                                 "core": 0,
                                 "angle": 0,
+                                "zkbridge": 0,
                             },
                             "nonces": {
                                 "aptosbridge": 0,
@@ -179,6 +180,7 @@ def get_data_new():
                                 "harmony": 0,
                                 "core": 0,
                                 "angle": 0,
+                                "zkbridge": 0,
                             }
                         }
                     }
@@ -321,6 +323,7 @@ def get_results(TOTAL):
                         "harmony": 0,
                         "core": 0,
                         "angle": 0,
+                        "zkbridge": 0,
                     }
                 }
             }
@@ -420,6 +423,7 @@ def send_result(results):
             "harmony"       : [],
             "core"          : [],
             "angle"         : [],
+            "zkbridge"      : [],
         },
     }
 
@@ -640,5 +644,9 @@ if __name__ == "__main__":
 
     fin = round((time.perf_counter() - start), 1)
     cprint(f'finish : {fin}', 'blue')
+
+
+
+
 
 
