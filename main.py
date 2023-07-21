@@ -169,6 +169,7 @@ def get_data_new():
                                 "core": 0,
                                 "angle": 0,
                                 "zkbridge": 0,
+                                "merkly": 0,
                             },
                             "nonces": {
                                 "aptosbridge": 0,
@@ -181,6 +182,7 @@ def get_data_new():
                                 "core": 0,
                                 "angle": 0,
                                 "zkbridge": 0,
+                                "merkly": 0,
                             }
                         }
                     }
@@ -324,6 +326,7 @@ def get_results(TOTAL):
                         "core": 0,
                         "angle": 0,
                         "zkbridge": 0,
+                        "merkly": 0,
                     }
                 }
             }
@@ -424,6 +427,7 @@ def send_result(results):
             "core"          : [],
             "angle"         : [],
             "zkbridge"      : [],
+            "merkly"        : [],
         },
     }
 
@@ -645,6 +649,9 @@ if __name__ == "__main__":
     fin = round((time.perf_counter() - start), 1)
     cprint(f'finish : {fin}', 'blue')
 
+    # call_json(datas, 'datas')
+    # call_json(TOTAL, 'total')
+    # call_json(results, 'results')
 
 
 

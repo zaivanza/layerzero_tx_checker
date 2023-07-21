@@ -41,6 +41,15 @@
 10. zkbridge :
 - bsc       => chain 
 - polygon   => chain 
+11. merkly gas refuel :
+- arbitrum  => chain 
+- optimism  => chain 
+- polygon   => chain 
+- bsc       => chain
+- fantom    => chain 
+- avalanche => chain 
+- celo      => chain 
+- gnosis    => chain 
 
 
 # Настройка :

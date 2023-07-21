@@ -4,10 +4,10 @@
 CSV_WRITE_CHAINS    = True # True если нужно записывать в csv информацию о кол-ве транзакций в каждой сети.         False если не нужно
 CSV_WRITE_PROTOCOLS = True # True если нужно записывать в csv информацию о кол-ве транзакций в каждом протоколе.    False если не нужно
 
-MIN_VALUE           = 1000 # объем в $
-MIN_TX_AMOUNT       = 25 # кол-во транзакций
+MIN_VALUE           = 500 # $
+MIN_TX_AMOUNT       = 25
 LAST_DATE_TX        = '05-07-2023' # d-m-y
-MIN_AMOUNT_CHAINS   = 5 # кол-во заюзанных сетей 
+MIN_AMOUNT_CHAINS   = 5 # сколько заюзанных сетей 
 
 # если кол-во дней между первой и последней транзакцией меньше этого числа, кошелек выделяется
 DAYS_AMOUNT = 30
@@ -27,29 +27,30 @@ chains = [
 
 # если кол-во транзакций в сети будет меньше назначенного числа, кошелек выделяется
 MIN_TX_AMOUNT_CHAINS = {
-    "arbitrum"  : 5,
+    "arbitrum"  : 0,
     "optimism"  : 0,
     "avalanche" : 0,
-    "bsc"       : 3,
-    "polygon"   : 0,
+    "bsc"       : 0,
+    "polygon"   : 1,
     "fantom"    : 0,
     "ethereum"  : 0,
-    "celo"      : 1,
-    "gnosis"    : 1,
+    "celo"      : 2,
+    "gnosis"    : 0,
 }
 
 # если кол-во транзакций в протоколе (смотрит во всех сетях) будет меньше назначенного числа, кошелек выделяется
 MIN_TX_AMOUNT_PROTOCOLS = {
     "aptosbridge"   : 0,
-    "stargate"      : 3,
+    "stargate"      : 2,
     "testnetbridge" : 0,
     "woofi"         : 0,
-    "holograph"     : 1,
+    "holograph"     : 0,
     "bitcoinbridge" : 0,
     "harmony"       : 0,
-    "core"          : 1,
+    "core"          : 0,
     "angle"         : 0,
-    "zkbridge"      : 1,
+    "zkbridge"      : 0,
+    "merkly"        : 3,
 }
 
 FILE_NAME = 'layerzero' # имя файла csv, который скрипт создаст сам
@@ -94,16 +95,26 @@ FILE_NAME = 'layerzero' # имя файла csv, который скрипт с�
 - bsc       => harmony (bnb)
 8. core :
 - bsc       => core (usdt / usdc)
-8. angle :
+9. angle :
 - bsc       => chain (agEUR)
 - polygon   => chain (agEUR)
 - celo      => chain (agEUR)
 - gnosis    => chain (agEUR)
-9. zkbridge :
+10. zkbridge :
 - bsc       => chain 
 - polygon   => chain 
+11. merkly gas refuel :
+- arbitrum  => chain 
+- optimism  => chain 
+- polygon   => chain 
+- bsc       => chain
+- fantom    => chain 
+- avalanche => chain 
+- celo      => chain 
+- gnosis    => chain 
 
 '''
+
 
 # контракты erc20 токенов
 token_contracts = {
@@ -278,16 +289,19 @@ contracts_eth = {
         'woofi': '0x4ab421de52b3112d02442b040dd3dc73e8af63b5',
         'testnetbridge': '0x0a9f824c05a74f577a536a8a0c673183a872dff4',
         'aptosbridge': '0x1bacc2205312534375c8d1801c27d28370656cff',
+        'merkly': '0xaa58e77238f0e4a565343a89a79b4addd744d649',
     },
     'optimism': {
         'stargate': '0xb49c4e680174e331cb0a7ff3ab58afc9738d5f8b',
         'woofi': '0xbeae1b06949d033da628ba3e5af267c3e740494b',
         'testnetbridge': '0x0a9f824c05a74f577a536a8a0c673183a872dff4',
         'aptosbridge': '0x86Bb63148d17d445Ed5398ef26Aa05Bf76dD5b59',
+        'merkly': '0xa2c203d7ef78ed80810da8404090f926d67cd892',
     },
     'avalanche': {
         'holograph': '0xd85b5e176a30edd1915d6728faebd25669b60d8b',
         'woofi': '0x51AF494f1B4d3f77835951FA827D66fc4A18Dae8',
+        'merkly': '0xe030543b943bdcd6559711ec8d344389c66e1d56',
     },
     'ethereum': {
         'stargate': '0x150f94B44927F078737562f0fcF3C95c01Cc2376',
@@ -296,11 +310,23 @@ contracts_eth = {
         'holograph': '0xd85b5e176a30edd1915d6728faebd25669b60d8b',
         'woofi': '0xAA9c15cd603428cA8ddD45e933F8EfE3Afbcc173',
         'zkbridge': '0xdB6fb08DD8Ce406DA8Ff53FAe65Bd374e3d68681',
+        'merkly': '0xa184998ec58dc1da77a1f9f1e361541257a50cf4',
     },
     'bsc': {
         'harmony': '0x128AEdC7f41ffb82131215e1722D8366faaD0CD4',
         'woofi': '0x81004C9b697857fD54E137075b51506c739EF439',
         'zkbridge': '0xfd3f4d96378072db0862a6f76cc258c2b7ea36cc',
+        'merkly': '0xfdc9018af0e37abf89233554c937eb5068127080',
+    },
+    'celo': {
+        'merkly': '0xe33519c400b8f040e73aeda2f45dfdd4634a7ca0',
+    },
+    'fantom': {
+        'merkly': '0x97337a9710beb17b8d77ca9175defba5e9afe62e',
+    },
+    'gnosis': {
+        'merkly': '0xb58f5110855fbef7a715d325d60543e7d4c18143',
     },
 }
+
 
