@@ -22,7 +22,7 @@ chains = [
     'fantom',
     'celo',
     'gnosis',
-    # 'ethereum',
+    'ethereum',
 ]
 
 # если кол-во транзакций в сети будет меньше назначенного числа, кошелек выделяется
@@ -86,6 +86,7 @@ FILE_NAME = 'layerzero' # имя файла csv, который скрипт с�
 - arbitrum  => aptos (eth)
 - bsc       => aptos (usdt / usdc)
 - avalanche => aptos (usdc)
+- ethereum  => aptos (eth / usdc / usdt)
 5. bitcoin bridge :
 - avalanche, arbitrum, optimism, bsc, polygon
 6. holograph :
@@ -246,10 +247,12 @@ contracts_erc20 = {
         token_contracts['ethereum']['USDT'] : 
             {
                 'stargate': '0x38EA452219524Bb87e18dE1C24D3bB59510BD783',
+                'aptosbridge': '0x50002CdFe7CCb0C41F519c6Eb0653158d11cd907',
             },
         token_contracts['ethereum']['USDC'] : 
             {
                 'stargate': '0xdf0770dF86a8034b3EFEf0A1Bb3c889B8332FF56',
+                'aptosbridge': '0x50002CdFe7CCb0C41F519c6Eb0653158d11cd907',
             },
     },
     'avalanche': {
@@ -305,6 +308,7 @@ contracts_eth = {
     },
     'ethereum': {
         'stargate': '0x150f94B44927F078737562f0fcF3C95c01Cc2376',
+        'aptosbridge': '0x50002CdFe7CCb0C41F519c6Eb0653158d11cd907',
     },
     'polygon': {
         'holograph': '0xd85b5e176a30edd1915d6728faebd25669b60d8b',

@@ -24,6 +24,7 @@
 - arbitrum  => aptos (eth)
 - bsc       => aptos (usdt / usdc)
 - avalanche => aptos (usdc)
+- ethereum  => aptos (eth / usdc / usdt)
 5. bitcoin bridge :
 - avalanche, arbitrum, optimism, bsc, polygon
 6. holograph :
